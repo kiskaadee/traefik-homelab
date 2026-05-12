@@ -1,0 +1,22 @@
+services:
+  authelia:
+    image: authelia/authelia:latest
+    container_name: authelia
+    restart: always
+    volumes:
+      - ./config:/config
+    networks:
+      - proxy-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.authelia.rule=Host(`auth.arch-services.mywire.org`)"
+      - "traefik.http.routers.authelia.entrypoints=websecure"
+      - "traefik.http.routers.authelia.tls.certresolver=myresolver"
+      # This label defines the middleware that other services will use
+      - "traefik.http.middlewares.authelia-auth.forwardauth.address=http://authelia:9091/api/verify?rd=https://auth.arch-services.mywire.org/"
+      - "traefik.http.middlewares.authelia-auth.forwardauth.trustForwardHeader=true"
+      - "traefik.http.middlewares.authelia-auth.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email"
+
+networks:
+  proxy-net:
+    external: true

@@ -1,161 +1,94 @@
-# Arch-traefik-hub 🚀
+# Hardened Private Cloud Hub
 
-A centralized local services platform using **Traefik v3** as a reverse proxy with automated **SSL (Let's Encrypt)** and resilient **Dynu DDNS IP synchronization**.
+This repository contains a modular, secure, and self-documenting homeserver architecture based on the **Hardened Hub** model.
 
----
+## 🏗️ Architectural Overview
 
-## 🏗️ Architecture
+The system is split into two distinct layers to ensure stability and security:
 
-The system is composed of two independent but complementary layers:
+### 1. Control Plane (`infra/`)
+The "nervous system" of the server. These services handle security, routing, identity, and maintenance.
 
-### 1. Gateway Layer (Traefik)
-- Reverse proxy for all services
-- Handles HTTPS termination
-- Performs ACME DNS-01 challenges via Dynu API
-- Runs inside `core/`
+- **Core (`infra/core`):** 
+    - **Traefik (v3.6):** The front door. Handles HTTPS (Let's Encrypt), routing, and load balancing.
+    - **Socket-Proxy:** The security wall. Decouples containers from the host's `/var/run/docker.sock`.
+- **Identity (`infra/authelia`):** Provides Single Sign-On (SSO) and 2FA protection for apps.
+- **Management (`infra/portainer`):** Visual container and stack management.
+- **Monitoring (`infra/dozzle`):** Real-time log streaming for all containers (SSO Protected).
+- **Maintenance (`infra/watchtower`, `infra/diun`):** Automated image updates and notifications.
 
-### 2. Infrastructure Layer (Dynu IP Sync)
-- Systemd-managed IP monitor (`dynu.service`)
-- Periodically detects public IPv4 changes
-- Updates Dynu DNS records only when necessary
-- Uses:
-  - DNS (fast path via `dig`)
-  - HTTP providers (fallback)
-  - Atomic state (`/var/lib/dynu/last_ip`)
-  - Structured journald logs
+### 2. Data Plane (`apps/`)
+The consumer-facing applications.
 
-### 3. Network
-- Shared Docker bridge: `proxy-net`
-- Domain: `*.arch-services.mywire.org`
-
----
-
-## 🚦 Project Status
-
-| Component | Status |
-| :--- | :--- |
-| NAT Port Forwarding (80/443) | ✅ Completed |
-| Traefik Gateway | ✅ Operational |
-| Dynu DDNS IP Sync | ✅ Completed |
-| ACME DNS-01 (Let's Encrypt) | ⏳ Pending validation |
-| Python Dashboard | 🏗️ In Progress |
+- **Homepage:** Central dashboard at `arch-services.mywire.org`.
+- **Gitea:** Self-hosted Git service (SSO Protected).
+- **Ollama:** Local LLM runner with 3 replicas.
+- **Excalidraw & Mermaid:** Visual tools for whiteboarding and diagramming.
 
 ---
 
 ## 🚀 Getting Started
 
-### 1. Environment Configuration
+### 1. Secrets Management
+Secrets are kept out of the configuration files and stored in `.env` files (git-ignored).
 
-Create `.env` in the project root:
+- **Core Infrastructure:** Create `infra/core/.env` based on `.env-example`:
+    ```env
+    DYNU_API_KEY=your_key
+    ACME_EMAIL=your_email
+    ```
+- **Identity (Authelia):** Create `infra/authelia/.env` with the following:
+    ```env
+    AUTHELIA_SESSION_SECRET=long_random_string
+    AUTHELIA_STORAGE_ENCRYPTION_KEY=long_random_string
+    AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET=long_random_string
+    ```
+
+### 2. Deployment
+Use the `up.sh` script to launch the stack. The script handles networks, permissions, and service sequencing.
 
 ```bash
-DYNU_API_KEY=your_key_here
-ACME_EMAIL=your_email@example.com
-DOMAIN=arch-services.mywire.org
-```
-
----
-
-### 2. Launch the Gateway
-
-```bash
-chmod +x up.sh
+# Start everything (Infrastructure + Apps)
 ./up.sh
+
+# Start ONLY the Control Plane
+./up.sh --infra-only
 ```
 
-This will:
-- Create the shared Docker network
-- Set correct permissions for ACME storage
-- Start Traefik and core services
+### 3. Verification
+Once deployed, verify your services are reachable:
+- **Homepage:** `https://arch-services.mywire.org`
+- **Auth Portal:** `https://auth.arch-services.mywire.org`
+- **Gitea:** `https://gitea.arch-services.mywire.org` (Redirects to Auth)
+- **Logs:** `https://logs.arch-services.mywire.org` (Redirects to Auth)
 
 ---
 
-### 3. Configure Dynu IP Sync (Host-level)
+## 📊 Observability & Monitoring
 
-The IP updater runs **outside Docker** via systemd.
+The system includes built-in tools for real-time monitoring and management:
 
-Run the setup script:
-
-```bash
-sudo ./setup-dynu.sh \
-  --host yourdomain.mywire.org \
-  --user your_dynu_username \
-  --password your_dynu_password
-```
-
-This installs:
-- `/usr/local/bin/ip-monitor.sh`
-- `dynu.service`
-- `dynu.timer`
-
-Verify:
-
-```bash
-systemctl status dynu.timer
-journalctl -u dynu.service -f
-cat /var/lib/dynu/last_ip
-```
+- **Traefik Dashboard**: `https://traefik.arch-services.mywire.org` — View routing, entrypoints, and certificate status (SSO Protected).
+- **Dozzle**: `https://logs.arch-services.mywire.org` — Real-time log streaming for all containers (SSO Protected).
+- **Portainer**: `https://portainer.arch-services.mywire.org` — Advanced container, volume, and stack management (SSO Protected).
+- **Homepage**: `https://arch-services.mywire.org` — The central "Single Pane of Glass" for all your services.
 
 ---
 
-## 🔍 Verification
+## 📜 Log Policy
 
-- **Traefik Logs**
-  ```bash
-  docker logs -f traefik
-  ```
+To prevent the host system from running out of disk space, a **Log Rotation** policy is enforced:
 
-- **Dynu Sync Logs**
-  ```bash
-  journalctl -u dynu.service -f
-  ```
+- **Driver**: `json-file`
+- **Max Size**: `10m` (10 Megabytes per file)
+- **Max Files**: `3` (Keeps the last 3 files)
 
-- **Check Current IP State**
-  ```bash
-  cat /var/lib/dynu/last_ip
-  ```
+This policy is currently enabled on core infrastructure and is recommended for all high-traffic application containers.
 
 ---
 
-## 🛠️ Adding New Services
-
-Each service must:
-
-- Join `proxy-net`
-- Define Traefik routing labels
-
-```yaml
-labels:
-  - "traefik.enable=true"
-  - "traefik.http.routers.MYSERVICE.rule=Host(`myservice.arch-services.mywire.org`)"
-  - "traefik.http.routers.MYSERVICE.entrypoints=websecure"
-  - "traefik.http.routers.MYSERVICE.tls.certresolver=myresolver"
-```
-
----
-
-## 📦 Current Services
-
-- Excalidraw → `excalidraw.${DOMAIN}`
-- Gitea → `gitea.${DOMAIN}`
-- Ollama (x3) → `ollama.${DOMAIN}`
-- Dozzle → `logs.${DOMAIN}`
-
----
-
-## 📌 Design Principles
-
-- **Idempotent execution** (safe under repetition)
-- **Fail-fast behavior** (no partial state)
-- **Atomic state updates**
-- **Separation of concerns**:
-  - Traefik → TLS + routing
-  - Dynu updater → IP correctness
-- **Observability-first logging** (journald structured events)
-
----
-
-## 📚 Related Docs
-
-- `docs/dynu-ip-update.md` → usage and operational notes  
-- `docs/dynu-ip-update-protocol.md` → design and architecture decisions  
+## 🛡️ Security Features
+- **Socket Isolation:** No application container has access to the Docker socket. All management tools use the `socket-proxy`.
+- **SSO Integration:** Critical apps (Gitea, Dozzle, Portainer) are behind Authelia Forward Auth.
+- **Automatic TLS:** Traefik manages Let's Encrypt certificates via DNS-01 challenges with Dynu.
+- **Network Segmentation:** Services are isolated on `proxy-net` and `socket-net`.

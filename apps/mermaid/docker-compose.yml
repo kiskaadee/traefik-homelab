@@ -1,0 +1,17 @@
+services:
+  mermaid:
+    image: ghcr.io/mermaid-js/mermaid-live-editor:latest
+    container_name: mermaid-live-editor
+    restart: always
+    networks:
+      - proxy-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mermaid.rule=Host(`mermaid.arch-services.mywire.org`)"
+      - "traefik.http.routers.mermaid.entrypoints=websecure"
+      - "traefik.http.routers.mermaid.tls.certresolver=myresolver"
+      - "traefik.http.services.mermaid.loadbalancer.server.port=8080"
+
+networks:
+  proxy-net:
+    external: true

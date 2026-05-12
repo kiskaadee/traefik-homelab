@@ -16,6 +16,7 @@ services:
       - "traefik.http.routers.gitea.rule=Host(`gitea.arch-services.mywire.org`)"
       - "traefik.http.routers.gitea.entrypoints=websecure"
       - "traefik.http.routers.gitea.tls.certresolver=myresolver"
+      - "traefik.http.routers.gitea.middlewares=authelia-auth@docker"
       - "traefik.http.services.gitea.loadbalancer.server.port=3000"
 
 networks:

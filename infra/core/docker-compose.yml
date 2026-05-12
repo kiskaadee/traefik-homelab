@@ -1,0 +1,88 @@
+services:
+  socket-proxy:
+    image: tecnativa/docker-socket-proxy
+    container_name: socket-proxy
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Only place the real socket is mounted
+    environment:
+      - CONTAINERS=1 # Traefik needs to see containers
+      - NETWORKS=1   # Traefik needs to see networks
+      - SERVICES=1
+      - TASKS=1
+      - IMAGES=1     # Needed for Watchtower/Portainer
+      - VOLUMES=1    # Needed for Portainer
+      - POST=1       # Needed for Portainer/Watchtower to start/stop/create containers
+      - DELETE=1     # Needed for Portainer/Watchtower to remove containers/images
+      - DOCKER_API_VERSION=1.40
+      - VERSION=1    # Allow Traefik to query version
+      - INFO=1       # Allow Traefik to query info
+      - EVENTS=1     # Allow Traefik to monitor container changes
+      - PING=1       # Allow Traefik to check Docker health
+      - BUILD=0
+      - COMMIT=0
+      - CONFIGS=0
+      - DISTRIBUTION=0
+      - EXEC=0
+      - NODES=0
+      - PLUGINS=0
+      - SECRETS=0
+      - SWARM=0
+      - SYSTEM=0
+    networks:
+      - socket-net
+
+  traefik:
+    image: traefik:v3.6
+    container_name: traefik
+    restart: always
+    depends_on:
+      - socket-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - DYNU_API_KEY=${DYNU_API_KEY}
+      - DOCKER_API_VERSION=1.40
+    command:
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.endpoint=tcp://socket-proxy:2375"
+      - "--providers.docker.exposedByDefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+      # SSL Setup
+      - "--certificatesresolvers.myresolver.acme.dnschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.dnschallenge.provider=dynu"
+      - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    volumes:
+      - ./letsencrypt:/letsencrypt
+    networks:
+      - socket-net
+      - proxy-net
+    labels:
+      - "traefik.enable=true"
+      # Authelia Middleware
+      - "traefik.http.middlewares.authelia-auth.forwardauth.address=http://authelia:9091/api/verify?rd=https://auth.arch-services.mywire.org/"
+      - "traefik.http.middlewares.authelia-auth.forwardauth.trustForwardHeader=true"
+      - "traefik.http.middlewares.authelia-auth.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email"
+      # Dashboard
+      - "traefik.http.routers.traefik-dash.rule=Host(`traefik.arch-services.mywire.org`)"
+      - "traefik.http.routers.traefik-dash.entrypoints=websecure"
+      - "traefik.http.routers.traefik-dash.tls.certresolver=myresolver"
+      - "traefik.http.routers.traefik-dash.service=api@internal"
+      - "traefik.http.routers.traefik-dash.middlewares=authelia-auth"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  socket-net:
+    external: true
+  proxy-net:
+    external: true

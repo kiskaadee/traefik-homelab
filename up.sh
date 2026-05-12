@@ -1,23 +1,49 @@
 #!/bin/bash
 
-# Ensure the shared network exists
-docker network inspect proxy-net >/dev/null 2>&1 || \
-    docker network create proxy-net
+# --- 1. NETWORK & PERMISSIONS ---
+docker network inspect proxy-net >/dev/null 2>&1 || docker network create proxy-net
+docker network inspect socket-net >/dev/null 2>&1 || docker network create socket-net
 
-# CRITICAL: Traefik SSL file permissions
-mkdir -p core/letsencrypt
-touch core/letsencrypt/acme.json
-chmod 600 core/letsencrypt/acme.json
+# SSL Permissions (Moved to infra/core)
+sudo mkdir -p infra/core/letsencrypt
+sudo touch infra/core/letsencrypt/acme.json
+sudo chmod 600 infra/core/letsencrypt/acme.json
+sudo chown root:root infra/core/letsencrypt/acme.json
 
-# Function to start a service
-start_service() {
-    echo "Starting $1..."
-    # Using -f allows us to stay in root and avoid 'cd' headaches
-    docker compose -f "$1/docker-compose.yml" up -d
+# --- 2. HELPER FUNCTIONS ---
+start_stack() {
+    local stack_path=$1
+    if [ -f "$stack_path/docker-compose.yml" ]; then
+        echo "Starting stack: $stack_path..."
+        docker compose -f "$stack_path/docker-compose.yml" up -d
+    else
+        echo "Warning: No docker-compose.yml found in $stack_path"
+    fi
 }
 
-start_service "core"
-start_service "services/dozzle"
-start_service "services/excalidraw"
+# --- 3. INFRASTRUCTURE LAYER (Control Plane) ---
+echo "=== Deploying Infrastructure Layer ==="
+start_stack "infra/core"
+start_stack "infra/authelia"
+start_stack "infra/portainer"
+start_stack "infra/watchtower"
+start_stack "infra/diun"
+start_stack "infra/dozzle"
+echo "Infrastructure is ready."
+echo ""
 
-echo "Arch-traefik-hub is up!"
+# --- 4. APPLICATION LAYER (Data Plane) ---
+if [[ "$1" == "--infra-only" ]]; then
+    echo "Skipping Application Layer as requested."
+else
+    echo "=== Deploying Application Layer ==="
+    # Dynamically start all apps in the apps/ directory
+    for app_dir in apps/*/; do
+        start_stack "${app_dir%/}"
+    done
+    echo "Applications are ready."
+fi
+
+echo ""
+echo "Hardened Private Cloud Deployment Complete."
+echo "Usage: ./up.sh [--infra-only]"
