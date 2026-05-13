@@ -34,4 +34,5 @@ venv/
 # OS Metadata
 .DS_Store
 Thumbs.db
-apps/homepage/config/logs/homepage.log
+apps/homepage/config/logs/
+

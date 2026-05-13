@@ -1,113 +1,55 @@
-# 🗺️ Project Roadmap: Arch-traefik-hub
+# 🗺️ Project Roadmap: Hardened Private Cloud Hub
 
-This roadmap reflects the current system maturity and next priorities.
-
----
-
-## Phase 1: Core Gateway & DNS Stability 🔒 (Mostly Complete)
-
-Objective: stable external access with correct DNS resolution.
-
-- [x] NAT Port Forwarding (80/443)
-- [x] Dynu DDNS IP synchronization (systemd-based)
-- [x] Traefik deployment with reverse proxy
-- [ ] ACME DNS-01 validation (Let's Encrypt)
-- [ ] End-to-end HTTPS verification across all services
-
-Notes:
-- IP drift is now handled independently via Dynu updater
-- Remaining risk is ACME challenge correctness
+This roadmap reflects the current system maturity and future priorities.
 
 ---
 
-## Phase 2: Observability & Control Plane 📊
+## ✅ Phase 1: Core Gateway & Infrastructure (Complete)
+*Objective: Stable external access, identity management, and core security.*
 
-Objective: reduce reliance on CLI and improve visibility.
-
-- [ ] FastAPI backend for service metadata
-- [ ] Minimal JS frontend dashboard
-- [ ] Integration with Docker socket (read-only)
-- [ ] Deep-linking to Dozzle logs per service
-- [ ] Health/status indicators for:
-  - containers
-  - domains
-  - SSL certificates
+- [x] **Dynamic DNS:** Reliable IP synchronization via systemd-based Dynu updater.
+- [x] **Edge Routing:** Traefik v3 with Let's Encrypt (DNS-01) automation.
+- [x] **Layered Architecture:** Clear separation between `infra/` (control plane) and `apps/` (data plane).
+- [x] **Identity & SSO:** Authelia integration with 2FA/OIDC support.
+- [x] **Security Hardening:** Docker socket proxy, internal network segmentation, and non-root users where possible.
+- [x] **Centralized Logging:** Real-time log streaming via Dozzle.
 
 ---
 
-## Phase 3: Service Ecosystem Expansion 🚀
+## 🏗️ Phase 2: Application Ecosystem & Observability (In Progress)
+*Objective: Expand utility and improve "Single Pane of Glass" monitoring.*
 
-Objective: increase utility without compromising isolation.
-
-- [ ] Excalidraw + diagram tooling
-- [ ] Expand Ollama cluster (load + memory tuning)
-- [ ] Add developer-focused tools (CI, registry, etc.)
-- [ ] Define service templates for quick onboarding
-
-Constraints:
-- Must use `proxy-net`
-- Must be Traefik-exposed
-- Must remain resource-aware
+- [x] **Service Discovery:** 'Homepage' dashboard integration.
+- [x] **Visual Tools:** Excalidraw and Mermaid deployment.
+- [x] **Development:** Self-hosted Gitea with SSO.
+- [x] **AI/ML:** Scalable Ollama cluster with model management.
+- [ ] **Unified Health:** Integrate Traefik/Docker health checks into the Homepage dashboard.
+- [ ] **Resource Monitoring:** Add lightweight metrics (e.g., Glances or Netdata) with dashboard widgets.
 
 ---
 
-## Phase 4: Network Optimization & Resilience 🌐
+## 🚀 Phase 3: Automation & Resilience
+*Objective: Move from "manual maintenance" to "autonomous operations".*
 
-Objective: reduce external dependencies and improve latency.
-
-- [ ] Local DNS resolver (Pi-hole or equivalent)
-- [ ] Internal hostname resolution (LAN-first)
-- [ ] NAT hairpinning validation across devices
-- [ ] Optional fallback DNS providers for redundancy
-
----
-
-## Phase 5: Hardening & Reliability ⚙️
-
-Objective: move from “working” to “robust”.
-
-- [ ] Add alerting (failed Dynu updates, SSL issues)
-- [ ] Timer tuning based on real IP volatility
-- [ ] Rate-limit awareness for Dynu API
-- [ ] Backup strategy for:
-  - Traefik config
-  - ACME storage
-- [ ] Evaluate IPv6 support (explicitly out-of-scope so far)
+- [x] **Automated Updates:** Watchtower and Diun for image lifecycle management.
+- [ ] **Backup Strategy:** Automated, encrypted off-site backups for persistent volumes (Gitea, DBs).
+- [ ] **Infrastructure as Code:** Further modularization of the `up.sh` script into a more robust CLI or Ansible-based setup.
+- [ ] **Alerting:** Push notifications (via Gotify/Ntfy) for system failures, auth breaches, or IP update issues.
 
 ---
 
-## 💡 Engineering Notes
+## 🌐 Phase 4: Network Optimization
+*Objective: Reduce latency and external dependencies.*
 
-### Separation of Concerns
-
-- Dynu updater:
-  - ensures correct **public IP**
-  - runs via systemd (host-level)
-
-- Traefik:
-  - ensures **TLS + routing**
-  - runs in Docker
-
-This separation prevents coupling failures (e.g., container restart affecting DNS correctness).
+- [ ] **Local DNS:** Ad-blocking DNS (Pi-hole/AdGuard Home) for LAN clients.
+- [ ] **Hairpin NAT:** Validation and optimization for internal traffic routing.
+- [ ] **VPN Integration:** WireGuard-based remote access for private management without public exposure.
 
 ---
 
-### Failure Model
+## 📜 Engineering Principles
 
-- **Degraded**
-  - DNS failure → HTTP fallback
-  - Provider-specific issues
-
-- **Error**
-  - No valid IP found
-  - Dynu API failure
-
-Only **successful external sync** mutates local state.
-
----
-
-### How to Use This Roadmap
-
-- Updated after stable merges into `main`
-- Items should represent **deployable increments**, not ideas
-- Avoid speculative features unless tied to concrete problems
+1. **Idempotency:** All deployment scripts (`up.sh`, `down.sh`) must be safe to run repeatedly.
+2. **Layered Security:** No single point of failure. If the gateway is breached, apps are still behind SSO.
+3. **Auditability:** Every change is reflected in documentation and Git history.
+4. **Resilience:** Infrastructure must survive reboots and network outages automatically.

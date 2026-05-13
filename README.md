@@ -92,3 +92,16 @@ This policy is currently enabled on core infrastructure and is recommended for a
 - **SSO Integration:** Critical apps (Gitea, Dozzle, Portainer) are behind Authelia Forward Auth.
 - **Automatic TLS:** Traefik manages Let's Encrypt certificates via DNS-01 challenges with Dynu.
 - **Network Segmentation:** Services are isolated on `proxy-net` and `socket-net`.
+
+---
+
+## 📚 Detailed Documentation
+
+For more in-depth information, please refer to the following guides:
+
+- **[Server Architecture](docs/architecture.md)**: Deep dive into the layered model, networking, and security posture.
+- **[Usability & Operations](docs/usability.md)**: How to use the hub, add new apps, and manage updates.
+- **[Troubleshooting](docs/troubleshooting.md)**: Solutions for common connectivity, SSL, and authentication issues.
+- **[Project Roadmap](docs/roadmap.md)**: Current status and future planned features.
+- **[Dynu IP Protocol](docs/dynu-ip-update-protocol.md)**: Technical details on the DDNS synchronization mechanism.
+
