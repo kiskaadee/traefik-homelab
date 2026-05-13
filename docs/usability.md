@@ -47,3 +47,21 @@ To add a new service to the Hub:
 
 ## 📝 Logging
 Real-time logs can be viewed via **Dozzle** at `https://logs.arch-services.mywire.org`. This is preferred over `docker logs` for quick debugging across multiple containers.
+
+## 🤖 Ollama API & Automation (Trusted Payload)
+Ollama uses a hybrid security model to allow both browser use and automated tools:
+
+### Browser Use
+Accessing `https://ollama.arch-services.mywire.org` directly will prompt for **Authelia SSO** login.
+
+### API & CLI Bypass
+For scripts, cron jobs, or terminal use, you can bypass SSO by including the `X-Ollama-Key` header.
+- **Header**: `X-Ollama-Key: sk-ollama-hardened-hub-2026`
+
+**Example (curl):**
+```bash
+curl https://ollama.arch-services.mywire.org/api/generate \
+  -H "X-Ollama-Key: sk-ollama-hardened-hub-2026" \
+  -d '{"model": "llama3", "prompt": "hi"}'
+```
+
