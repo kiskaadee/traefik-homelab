@@ -15,7 +15,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.gitea.rule=Host(`gitea.arch-services.mywire.org`)"
       - "traefik.http.routers.gitea.entrypoints=websecure"
-      - "traefik.http.routers.gitea.tls.certresolver=myresolver"
+      - "traefik.http.routers.gitea.tls=true"
       - "traefik.http.routers.gitea.middlewares=authelia-auth@docker"
       - "traefik.http.routers.gitea-red.rule=Host(`gitea.arch-services.mywire.org`)"
       - "traefik.http.routers.gitea-red.entrypoints=web"

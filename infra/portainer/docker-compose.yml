@@ -13,7 +13,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.portainer.rule=Host(`portainer.arch-services.mywire.org`)"
       - "traefik.http.routers.portainer.entrypoints=websecure"
-      - "traefik.http.routers.portainer.tls.certresolver=myresolver"
+      - "traefik.http.routers.portainer.tls=true"
       - "traefik.http.routers.portainer-red.rule=Host(`portainer.arch-services.mywire.org`)"
       - "traefik.http.routers.portainer-red.entrypoints=web"
       - "traefik.http.routers.portainer-red.middlewares=https-redirect@docker"

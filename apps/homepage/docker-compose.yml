@@ -15,8 +15,8 @@ services:
       # Public (HTTPS)
       - "traefik.http.routers.homepage.rule=Host(`arch-services.mywire.org`)"
       - "traefik.http.routers.homepage.entrypoints=websecure"
-      - "traefik.http.routers.homepage.tls.certresolver=myresolver"
-      
+      - "traefik.http.routers.homepage.tls=true"
+
       # Public (Redirect)
       - "traefik.http.routers.homepage-red.rule=Host(`arch-services.mywire.org`)"
       - "traefik.http.routers.homepage-red.entrypoints=web"

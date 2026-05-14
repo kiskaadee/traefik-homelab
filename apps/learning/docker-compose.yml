@@ -14,7 +14,7 @@ services:
       # Public (HTTPS)
       - "traefik.http.routers.learning.rule=Host(`learning.arch-services.mywire.org`)"
       - "traefik.http.routers.learning.entrypoints=websecure"
-      - "traefik.http.routers.learning.tls.certresolver=myresolver"
+      - "traefik.http.routers.learning.tls=true"
       - "traefik.http.routers.learning.middlewares=authelia-auth@docker"
 
       # Public (Redirect)
