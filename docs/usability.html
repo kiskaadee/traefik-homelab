@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usability & Operations | Hardened Hub</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<main>
+    <header>
+        <h1>🖱️ Usability & Operational Notes</h1>
+        <p>A guide for interacting with the Hardened Hub once deployed.</p>
+    </header>
+
+    <nav>
+        <h4>Topics</h4>
+        <ul>
+            <li><a href="#auth">Authentication</a></li>
+            <li><a href="#nav">Navigation</a></li>
+            <li><a href="#mgmt">Management</a></li>
+            <li><a href="#add">Adding Apps</a></li>
+            <li><a href="#ollama">Ollama API</a></li>
+        </ul>
+    </nav>
+
+    <section id="auth">
+        <h2>🔑 Authentication (SSO)</h2>
+        <p>Most services are protected by <strong>Authelia</strong>.</p>
+        <ol>
+            <li>Access a protected service (e.g., <code>gitea.*</code>).</li>
+            <li>You will be redirected to the Auth Portal (<code>auth.*</code>).</li>
+            <li>Log in with your credentials.</li>
+            <li>Once authenticated, you have global access to all SSO-enabled services.</li>
+        </ol>
+    </section>
+
+    <section id="nav">
+        <h2>🧭 Navigating the Hub</h2>
+        <p>The <strong>Homepage</strong> dashboard is your central entry point:</p>
+        <ul>
+            <li><strong>URL:</strong> <a href="https://arch-services.mywire.org">https://arch-services.mywire.org</a></li>
+            <li><strong>Widgets:</strong> View container health, system resources, and service links.</li>
+        </ul>
+    </section>
+
+    <section id="mgmt">
+        <h2>🛠️ Service Management</h2>
+        <h3>Deployment Scripts</h3>
+        <pre><code># Start everything
+./up.sh
+
+# Start ONLY the Control Plane
+./up.sh --infra-only
+
+# Stop all services
+./down.sh</code></pre>
+    </section>
+
+    <section id="add">
+        <h2>➕ Adding a New Application</h2>
+        <ol>
+            <li>Create <code>apps/your-app/docker-compose.yml</code>.</li>
+            <li>Connect to <code>proxy-net</code>.</li>
+            <li>Add Traefik labels for routing and Authelia protection.</li>
+            <li>Update <code>apps/homepage/config/services.yaml</code>.</li>
+        </ol>
+    </section>
+
+    <section id="ollama">
+        <h2>🤖 Ollama API & Automation</h2>
+        <p>Uses a hybrid security model for browser and CLI access.</p>
+        <div class="layer-box">
+            <h4>API Key / Trusted Payload</h4>
+            <p><strong>Header:</strong> <code>X-Ollama-Key: sk-ollama-hardened-hub-2026</code></p>
+            <pre><code>curl https://ollama.arch-services.mywire.org/api/generate \
+  -H "X-Ollama-Key: sk-ollama-hardened-hub-2026" \
+  -d '{"model": "llama3", "prompt": "hi"}'</code></pre>
+        </div>
+    </section>
+
+    <footer>
+        <p>(c) 2026 | <a href="https://roadtotech.me">Kiskaadee</a></p>
+    </footer>
+</main>
+
+</body>
+</html>

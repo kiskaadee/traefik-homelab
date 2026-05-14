@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynu IP Protocol | Hardened Hub</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<main>
+    <header>
+        <h1>📡 Dynu IP Monitor & Updater</h1>
+        <p>Design and architecture of the DDNS synchronization mechanism.</p>
+    </header>
+
+    <section>
+        <h2>Problem Definition</h2>
+        <p>Maintain accurate DNS A records despite dynamic public IPs and unreliable providers.</p>
+    </section>
+
+    <section>
+        <h2>Core Design Decisions</h2>
+        <div class="grid">
+            <article class="card">
+                <h4>1. Probe Model</h4>
+                <p>Runs periodically via systemd instead of a long-lived daemon.</p>
+            </article>
+            <article class="card">
+                <h4>2. Dual-Source</h4>
+                <p>Uses DNS (primary) and HTTP (fallback) for IP discovery.</p>
+            </article>
+            <article class="card">
+                <h4>3. Validation</h4>
+                <p>Strict pipeline ensures no RFC1918 or private IPs are ever synced.</p>
+            </article>
+            <article class="card">
+                <h4>4. Atomicity</h4>
+                <p>State updates use atomic file moves to prevent corruption.</p>
+            </article>
+        </div>
+    </section>
+
+    <section>
+        <h2>Failure Model</h2>
+        <ul>
+            <li><strong>Degraded:</strong> Fallback used, system remains functional.</li>
+            <li><strong>Error:</strong> No valid IP found, abort mutation.</li>
+        </ul>
+    </section>
+
+    <footer>
+        <p>(c) 2026 | <a href="https://roadtotech.me">Kiskaadee</a></p>
+    </footer>
+</main>
+
+</body>
+</html>
