@@ -1,18 +1,54 @@
 ---
-# For configuration options and examples, please see:
-# https://gethomepage.dev/configs/services/
+# Infrastructure Group
+- Infrastructure:
+    - Traefik:
+        icon: traefik.png
+        href: https://traefik.arch-services.mywire.org
+        description: Edge Router & SSL
+        server: my-docker
+        container: traefik
+    - Authelia:
+        icon: authelia.png
+        href: https://auth.arch-services.mywire.org
+        description: Identity & SSO
+        server: my-docker
+        container: authelia
+    - Portainer:
+        icon: portainer.png
+        href: https://portainer.arch-services.mywire.org
+        description: Container Management
+        server: my-docker
+        container: portainer
+    - Dozzle:
+        icon: dozzle.png
+        href: https://logs.arch-services.mywire.org
+        description: Log Viewer
+        server: my-docker
+        container: dozzle
 
-- My First Group:
-    - My First Service:
-        href: http://localhost/
-        description: Homepage is awesome
-
-- My Second Group:
-    - My Second Service:
-        href: http://localhost/
-        description: Homepage is the best
-
-- My Third Group:
-    - My Third Service:
-        href: http://localhost/
-        description: Homepage is 😎
+# Applications Group
+- Applications:
+    - Gitea:
+        icon: gitea.png
+        href: https://gitea.arch-services.mywire.org
+        description: Git Service
+        server: my-docker
+        container: gitea
+    - Ollama:
+        icon: ollama.png
+        href: https://ollama.arch-services.mywire.org
+        description: AI Model Runner
+        server: my-docker
+        container: ollama-ollama-1
+    - Excalidraw:
+        icon: excalidraw.png
+        href: https://excalidraw.arch-services.mywire.org
+        description: Sketching Tool
+        server: my-docker
+        container: excalidraw-excalidraw-1
+    - Mermaid:
+        icon: mermaid.png
+        href: https://mermaid.arch-services.mywire.org
+        description: Diagramming Tool
+        server: my-docker
+        container: mermaid-live-editor

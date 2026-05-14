@@ -9,9 +9,10 @@ services:
       - HOMEPAGE_ALLOWED_HOSTS=arch-services.mywire.org
     networks:
       - proxy-net
+      - socket-net
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.homepage.rule=Host(`arch-services.mywire.org`)"
+      - "traefik.http.routers.homepage.rule=Host(`arch-services.mywire.org`) || Host(`homepage.localhost`)"
       - "traefik.http.routers.homepage.entrypoints=websecure"
       - "traefik.http.routers.homepage.tls.certresolver=myresolver"
       - "traefik.http.services.homepage.loadbalancer.server.port=3000"
@@ -19,3 +20,6 @@ services:
 networks:
   proxy-net:
     external: true
+  socket-net:
+    external: true
+

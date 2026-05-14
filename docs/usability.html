@@ -40,10 +40,22 @@
         <h2>🧭 Navigating the Hub</h2>
         <p>The <strong>Homepage</strong> dashboard is your central entry point:</p>
         <ul>
-            <li><strong>URL:</strong> <a href="https://arch-services.mywire.org">https://arch-services.mywire.org</a></li>
-            <li><strong>Widgets:</strong> View container health, system resources, and service links.</li>
+            <li><strong>Public URL:</strong> <a href="https://arch-services.mywire.org">https://arch-services.mywire.org</a></li>
+            <li><strong>Local URL:</strong> <a href="http://homepage.localhost">http://homepage.localhost</a></li>
+            <li><strong>Widgets:</strong> View real-time Docker container statuses, system resources, and service links.</li>
         </ul>
+        <div class="layer-box">
+            <h4>Local Access (.localhost)</h4>
+            <p>All services are also reachable locally without external DNS. Browsers automatically resolve <code>*.localhost</code> to your machine.</p>
+            <ul>
+                <li><code>http://gitea.localhost</code></li>
+                <li><code>http://auth.localhost</code></li>
+                <li><code>http://logs.localhost</code></li>
+                <li><code>http://portainer.localhost</code></li>
+            </ul>
+        </div>
     </section>
+
 
     <section id="mgmt">
         <h2>🛠️ Service Management</h2>

@@ -10,7 +10,8 @@ services:
       - socket-net
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.logs.rule=Host(`logs.arch-services.mywire.org`)"
+      - "traefik.http.routers.logs.rule=Host(`logs.arch-services.mywire.org`) || Host(`logs.localhost`)"
+
       - "traefik.http.routers.logs.entrypoints=websecure"
       - "traefik.http.routers.logs.tls.certresolver=myresolver"
       - "traefik.http.routers.logs.middlewares=authelia-auth@docker"

@@ -17,14 +17,15 @@ services:
     labels:
       - "traefik.enable=true"
       # Router 1: API/Automation (Token-based)
-      - "traefik.http.routers.ollama-api.rule=Host(`ollama.arch-services.mywire.org`) && Header(`X-Ollama-Key`, `sk-ollama-hardened-hub-2026`)"
+      - "traefik.http.routers.ollama-api.rule=(Host(`ollama.arch-services.mywire.org`) || Host(`ollama.localhost`)) && Header(`X-Ollama-Key`, `sk-ollama-hardened-hub-2026`)"
       - "traefik.http.routers.ollama-api.entrypoints=websecure"
       - "traefik.http.routers.ollama-api.tls.certresolver=myresolver"
       - "traefik.http.routers.ollama-api.priority=100"
       - "traefik.http.routers.ollama-api.service=ollama-svc"
 
       # Router 2: Browser/Standard (Authelia Protected)
-      - "traefik.http.routers.ollama-browser.rule=Host(`ollama.arch-services.mywire.org`)"
+      - "traefik.http.routers.ollama-browser.rule=Host(`ollama.arch-services.mywire.org`) || Host(`ollama.localhost`)"
+
       - "traefik.http.routers.ollama-browser.entrypoints=websecure"
       - "traefik.http.routers.ollama-browser.tls.certresolver=myresolver"
       - "traefik.http.routers.ollama-browser.middlewares=authelia-auth@docker"

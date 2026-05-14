@@ -70,7 +70,8 @@ services:
       - "traefik.http.middlewares.authelia-auth.forwardauth.trustForwardHeader=true"
       - "traefik.http.middlewares.authelia-auth.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email"
       # Dashboard
-      - "traefik.http.routers.traefik-dash.rule=Host(`traefik.arch-services.mywire.org`)"
+      - "traefik.http.routers.traefik-dash.rule=Host(`traefik.arch-services.mywire.org`) || Host(`traefik.localhost`)"
+
       - "traefik.http.routers.traefik-dash.entrypoints=websecure"
       - "traefik.http.routers.traefik-dash.tls.certresolver=myresolver"
       - "traefik.http.routers.traefik-dash.service=api@internal"
