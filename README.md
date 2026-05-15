@@ -104,10 +104,10 @@ This policy is currently enabled on core infrastructure and is recommended for a
 
 For more in-depth information, please refer to the following guides:
 
-- **[Server Architecture](docs/architecture.html)**: Deep dive into the layered model, networking, and security posture.
-- **[Usability & Operations](docs/usability.html)**: How to use the hub, add new apps, and manage updates.
-- **[Troubleshooting](docs/troubleshooting.html)**: Solutions for common connectivity, SSL, and authentication issues.
-- **[Project Roadmap](docs/roadmap.html)**: Current status and future planned features.
-- **[Dynu IP Protocol](docs/dynu-ip-update-protocol.html)**: Technical details on the DDNS synchronization mechanism.
+- **[Server Architecture](https://kiskaadee.github.io/arch-traefik-hub/architecture.html)**: Deep dive into the layered model, networking, and security posture.
+- **[Usability & Operations](https://kiskaadee.github.io/arch-traefik-hub/usability.html)**: How to use the hub, add new apps, and manage updates.
+- **[Troubleshooting](https://kiskaadee.github.io/arch-traefik-hub/troubleshooting.html)**: Solutions for common connectivity, SSL, and authentication issues.
+- **[Project Roadmap](https://kiskaadee.github.io/arch-traefik-hub/roadmap.html)**: Current status and future planned features.
+- **[Dynu IP Protocol](https://kiskaadee.github.io/arch-traefik-hub/dynu-ip-update-protocol.html)**: Technical details on the DDNS synchronization mechanism.
 
 
