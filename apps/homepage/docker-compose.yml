@@ -17,8 +17,7 @@ services:
       - "traefik.http.routers.homepage.entrypoints=websecure"
       - "traefik.http.routers.homepage.tls=true"
 
-      # Public (Redirect)
-      - "traefik.http.routers.homepage-red.rule=Host(`arch-services.mywire.org`)"
+      # Public (Redirect)      - "traefik.http.routers.homepage-red.rule=Host(`arch-services.mywire.org`)"
       - "traefik.http.routers.homepage-red.entrypoints=web"
       - "traefik.http.routers.homepage-red.middlewares=https-redirect@docker"
 
