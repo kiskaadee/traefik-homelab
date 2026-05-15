@@ -25,7 +25,7 @@ timer → service → script
 Run the setup script as root:
 
 ```bash
-sudo ./setup.sh \
+sudo ./api-update-installer.sh \
   --host your-domain.mywire.org \
   --user your-dynu-username \
   --password your-dynu-password
@@ -34,7 +34,7 @@ sudo ./setup.sh \
 This will:
 
 * Install the script to `/usr/local/bin/ip-monitor.sh`
-* Install systemd units:
+* Install systemd units (from the `install/` directory):
 
   * `/etc/systemd/system/dynu.service`
   * `/etc/systemd/system/dynu.timer`

@@ -41,9 +41,23 @@
 
     <section id="ssl">
         <h2>🔒 SSL & Certificate Issues</h2>
-        <p>If you see "Connection not private":</p>
-        <pre><code># Check Traefik ACME logs
-docker compose -f infra/core/docker-compose.yml logs -f traefik</code></pre>
+        <p>If you see "Connection not private", Traefik may be failing the ACME challenge.</p>
+        
+        <div class="card">
+            <h4>Dynu Quota Deadlock (Record Hoarding)</h4>
+            <p>On the Dynu free tier (4-record limit), failed challenges can leave stale <code>TXT</code> records that block new attempts with a <code>503: Quota Exception</code>.</p>
+            <p><strong>Fix:</strong> Run the automated purge script to clear stale records and restart the challenge:</p>
+            <pre><code>./scripts/purge-dynu.sh</code></pre>
+        </div>
+
+        <div class="layer-box">
+            <h4>Manual Inspection</h4>
+            <pre><code># Check Traefik ACME logs
+docker compose -f infra/core/docker-compose.yml logs -f traefik
+
+# Run automated SSL diagnostic
+./scripts/check-ssl.sh</code></pre>
+        </div>
     </section>
 
     <section id="auth">

@@ -73,6 +73,11 @@ The system includes built-in tools for real-time monitoring and management:
 - **Portainer**: `https://portainer.arch-services.mywire.org` — Advanced container, volume, and stack management (SSO Protected).
 - **Homepage**: `https://arch-services.mywire.org` — The central "Single Pane of Glass" for all your services.
 
+### Maintenance Scripts
+For rapid diagnostics and common fixes, use the included automation scripts:
+- **`./scripts/check-ssl.sh`**: Instantly audits the SSL/TLS status across all configured public subdomains.
+- **`./scripts/purge-dynu.sh`**: Clears stale ACME challenge records from Dynu to resolve "503 Quota" deadlocks.
+
 ---
 
 ## 📜 Log Policy
