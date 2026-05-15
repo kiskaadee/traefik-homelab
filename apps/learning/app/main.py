@@ -85,6 +85,7 @@ def get_services():
             {"name": "Ollama", "container": "ollama-ollama-1", "href": "https://ollama.arch-services.mywire.org"},
             {"name": "Excalidraw", "container": "excalidraw-excalidraw-1", "href": "https://excalidraw.arch-services.mywire.org"},
             {"name": "Mermaid", "container": "mermaid-live-editor", "href": "https://mermaid.arch-services.mywire.org"},
+            {"name": "Jellyfin", "container": "jellyfin", "href": "https://jellyfin.arch-services.mywire.org"},
         ]
     }
     

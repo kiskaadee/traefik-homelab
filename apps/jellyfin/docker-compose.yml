@@ -1,0 +1,30 @@
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    user: 1000:1000 # Assuming standard user, change if needed
+    volumes:
+      - ./config:/config
+      - ./cache:/cache
+      - /home/kiskaadee/media:/media # Assuming a media path in home
+    restart: unless-stopped
+    networks:
+      - proxy-net
+    labels:
+      - "traefik.enable=true"
+      # Public (HTTPS)
+      - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.arch-services.mywire.org`)"
+      - "traefik.http.routers.jellyfin.entrypoints=websecure"
+      - "traefik.http.routers.jellyfin.tls=true"
+      - "traefik.http.routers.jellyfin.middlewares=authelia-auth@docker"
+
+      # Public (Redirect)
+      - "traefik.http.routers.jellyfin-red.rule=Host(`jellyfin.arch-services.mywire.org`)"
+      - "traefik.http.routers.jellyfin-red.entrypoints=web"
+      - "traefik.http.routers.jellyfin-red.middlewares=https-redirect@docker"
+
+      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
+
+networks:
+  proxy-net:
+    external: true
