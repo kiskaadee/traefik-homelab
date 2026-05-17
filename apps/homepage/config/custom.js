@@ -3,10 +3,6 @@
  */
 
 function getApiBase() {
-    const host = window.location.hostname;
-    if (host === 'localhost' || host.endsWith('.localhost')) {
-        return `http://learning.localhost`;
-    }
     return `https://learning.arch-services.mywire.org`;
 }
 
