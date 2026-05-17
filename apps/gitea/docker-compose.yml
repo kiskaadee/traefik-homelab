@@ -17,12 +17,13 @@ services:
       - "traefik.http.routers.gitea.entrypoints=websecure"
       - "traefik.http.routers.gitea.tls=true"
       - "traefik.http.routers.gitea.middlewares=authelia-auth@docker"
+      - "traefik.http.routers.gitea.service=gitea-svc"
       - "traefik.http.routers.gitea-red.rule=Host(`gitea.arch-services.mywire.org`)"
       - "traefik.http.routers.gitea-red.entrypoints=web"
       - "traefik.http.routers.gitea-red.middlewares=https-redirect@docker"
-      - "traefik.http.routers.gitea-local.rule=Host(`gitea.localhost`)"
-      - "traefik.http.routers.gitea-local.entrypoints=web"
-      - "traefik.http.services.gitea.loadbalancer.server.port=3000"
+
+      - "traefik.http.services.gitea-svc.loadbalancer.server.port=3000"
+
 
 networks:
   proxy-net:

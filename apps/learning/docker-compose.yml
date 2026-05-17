@@ -17,17 +17,15 @@ services:
       - "traefik.http.routers.learning.rule=Host(`learning.arch-services.mywire.org`)"
       - "traefik.http.routers.learning.entrypoints=websecure"
       - "traefik.http.routers.learning.tls=true"
+      - "traefik.http.routers.learning.service=learning-svc"
 
       # Public (Redirect)
       - "traefik.http.routers.learning-red.rule=Host(`learning.arch-services.mywire.org`)"
       - "traefik.http.routers.learning-red.entrypoints=web"
       - "traefik.http.routers.learning-red.middlewares=https-redirect@docker"
 
-      # Local (HTTP)
-      - "traefik.http.routers.learning-local.rule=Host(`learning.localhost`)"
-      - "traefik.http.routers.learning-local.entrypoints=web"
-      
-      - "traefik.http.services.learning.loadbalancer.server.port=8000"
+      - "traefik.http.services.learning-svc.loadbalancer.server.port=8000"
+
 
 networks:
   proxy-net:

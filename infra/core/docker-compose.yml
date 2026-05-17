@@ -90,12 +90,6 @@ services:
       - "traefik.http.routers.traefik-dash-red.entrypoints=web"
       - "traefik.http.routers.traefik-dash-red.middlewares=https-redirect@docker"
 
-      # Dashboard - Local (HTTP)
-      - "traefik.http.routers.traefik-dash-local.rule=Host(`traefik.localhost`)"
-      - "traefik.http.routers.traefik-dash-local.entrypoints=web"
-      - "traefik.http.routers.traefik-dash-local.service=api@internal"
-
-
     logging:
       driver: "json-file"
       options:

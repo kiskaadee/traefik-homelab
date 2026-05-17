@@ -28,11 +28,6 @@ services:
       - "traefik.http.routers.ollama-api-red.middlewares=https-redirect@docker"
       - "traefik.http.routers.ollama-api-red.priority=100"
 
-      - "traefik.http.routers.ollama-api-local.rule=Host(`ollama.localhost`) && Header(`X-Ollama-Key`, `sk-ollama-hardened-hub-2026`)"
-      - "traefik.http.routers.ollama-api-local.entrypoints=web"
-      - "traefik.http.routers.ollama-api-local.priority=100"
-      - "traefik.http.routers.ollama-api-local.service=ollama-svc"
-
       # Router 2: Browser/Standard (Authelia Protected)
       - "traefik.http.routers.ollama-browser.rule=Host(`ollama.arch-services.mywire.org`)"
       - "traefik.http.routers.ollama-browser.entrypoints=websecure"
@@ -46,13 +41,9 @@ services:
       - "traefik.http.routers.ollama-browser-red.middlewares=https-redirect@docker"
       - "traefik.http.routers.ollama-browser-red.priority=50"
 
-      - "traefik.http.routers.ollama-browser-local.rule=Host(`ollama.localhost`)"
-      - "traefik.http.routers.ollama-browser-local.entrypoints=web"
-      - "traefik.http.routers.ollama-browser-local.priority=50"
-      - "traefik.http.routers.ollama-browser-local.service=ollama-svc"
-
       # Shared Service
       - "traefik.http.services.ollama-svc.loadbalancer.server.port=11434"
+
       - "traefik.http.services.ollama-svc.loadbalancer.healthcheck.path=/api/tags"
       - "traefik.http.services.ollama-svc.loadbalancer.healthcheck.interval=10s"
 

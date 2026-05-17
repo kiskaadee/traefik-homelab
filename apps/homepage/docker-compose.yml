@@ -17,17 +17,15 @@ services:
       - "traefik.http.routers.homepage.rule=Host(`arch-services.mywire.org`)"
       - "traefik.http.routers.homepage.entrypoints=websecure"
       - "traefik.http.routers.homepage.tls=true"
+      - "traefik.http.routers.homepage.service=homepage-svc"
 
       # Public (Redirect)
       - "traefik.http.routers.homepage-red.rule=Host(`arch-services.mywire.org`)"
       - "traefik.http.routers.homepage-red.entrypoints=web"
       - "traefik.http.routers.homepage-red.middlewares=https-redirect@docker"
 
-      # Local (HTTP)
-      - "traefik.http.routers.homepage-local.rule=Host(`homepage.localhost`) || Host(`dashboard.localhost`) || Host(`localhost`)"
-      - "traefik.http.routers.homepage-local.entrypoints=web"
-      
-      - "traefik.http.services.homepage.loadbalancer.server.port=3000"
+      - "traefik.http.services.homepage-svc.loadbalancer.server.port=3000"
+
 
 
 networks:

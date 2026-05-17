@@ -13,12 +13,12 @@ services:
       - "traefik.http.routers.excalidraw.entrypoints=websecure"
       - "traefik.http.routers.excalidraw.tls=true"
       - "traefik.http.routers.excalidraw.tls.certresolver=myresolver"
+      - "traefik.http.routers.excalidraw.service=excalidraw-svc"
       - "traefik.http.routers.excalidraw-red.rule=Host(`excalidraw.arch-services.mywire.org`)"
       - "traefik.http.routers.excalidraw-red.entrypoints=web"
       - "traefik.http.routers.excalidraw-red.middlewares=https-redirect@docker"
-      - "traefik.http.routers.excalidraw-local.rule=Host(`excalidraw.localhost`)"
-      - "traefik.http.routers.excalidraw-local.entrypoints=web"
-      - "traefik.http.services.excalidraw.loadbalancer.server.port=80"
+
+      - "traefik.http.services.excalidraw-svc.loadbalancer.server.port=80"
 
   excalidraw-room:
     image: excalidraw/excalidraw-room:latest
@@ -31,12 +31,13 @@ services:
       - "traefik.http.routers.excalidraw-room.entrypoints=websecure"
       - "traefik.http.routers.excalidraw-room.tls=true"
       - "traefik.http.routers.excalidraw-room.tls.certresolver=myresolver"
+      - "traefik.http.routers.excalidraw-room.service=excalidraw-room-svc"
       - "traefik.http.routers.excalidraw-room-red.rule=Host(`excalidraw.arch-services.mywire.org`) && PathPrefix(`/socket.io`)"
       - "traefik.http.routers.excalidraw-room-red.entrypoints=web"
       - "traefik.http.routers.excalidraw-room-red.middlewares=https-redirect@docker"
-      - "traefik.http.routers.excalidraw-room-local.rule=Host(`excalidraw.localhost`) && PathPrefix(`/socket.io`)"
-      - "traefik.http.routers.excalidraw-room-local.entrypoints=web"
-      - "traefik.http.services.excalidraw-room.loadbalancer.server.port=8080"
+
+      - "traefik.http.services.excalidraw-room-svc.loadbalancer.server.port=8080"
+
 
 networks:
   proxy-net:

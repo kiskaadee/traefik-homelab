@@ -14,11 +14,13 @@ services:
       - "traefik.http.routers.logs.entrypoints=websecure"
       - "traefik.http.routers.logs.tls=true"
       - "traefik.http.routers.logs.middlewares=authelia-auth@docker"
+      - "traefik.http.routers.logs.service=logs-svc"
       - "traefik.http.routers.logs-red.rule=Host(`logs.arch-services.mywire.org`)"
       - "traefik.http.routers.logs-red.entrypoints=web"
       - "traefik.http.routers.logs-red.middlewares=https-redirect@docker"
-      - "traefik.http.routers.logs-local.rule=Host(`logs.localhost`)"
-      - "traefik.http.routers.logs-local.entrypoints=web"
+
+      - "traefik.http.services.logs-svc.loadbalancer.server.port=8080"
+
 
 networks:
   proxy-net:
