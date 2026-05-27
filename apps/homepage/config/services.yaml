@@ -19,12 +19,12 @@
     #     description: Container Management
     #     server: my-docker
     #     container: portainer
-    - Dozzle:
-        icon: dozzle.png
-        href: https://logs.arch-services.mywire.org
-        description: Log Viewer
-        server: my-docker
-        container: dozzle
+    # - Dozzle:
+    #     icon: dozzle.png
+    #     href: https://logs.arch-services.mywire.org
+    #     description: Log Viewer
+    #     server: my-docker
+    #     container: dozzle
 
 # Applications Group
 - Applications:
@@ -34,12 +34,18 @@
     #     description: Git Service
     #     server: my-docker
     #     container: gitea
-    - Ollama:
-        icon: ollama.png
-        href: https://ollama.arch-services.mywire.org
-        description: AI Model Runner
+    # - Ollama:
+    #     icon: ollama.png
+    #     href: https://ollama.arch-services.mywire.org
+    #     description: AI Model Runner
+    #     server: my-docker
+    #     container: ollama-ollama-1
+    - Jellyfin:
+        icon: jellyfin.png
+        href: https://jellyfin.arch-services.mywire.org
+        description: Media Server
         server: my-docker
-        container: ollama-ollama-1
+        container: jellyfin
     - Excalidraw:
         icon: excalidraw.png
         href: https://excalidraw.arch-services.mywire.org
@@ -52,10 +58,4 @@
         description: Diagramming Tool
         server: my-docker
         container: mermaid-live-editor
-    - Jellyfin:
-        icon: jellyfin.png
-        href: https://jellyfin.arch-services.mywire.org
-        description: Media Server
-        server: my-docker
-        container: jellyfin
  
