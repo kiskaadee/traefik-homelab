@@ -46,7 +46,7 @@
         <div class="grid">
             <article class="card">
                 <h4>🌐 Edge Gateway</h4>
-                <p><strong>Traefik v3:</strong> Reverse Proxy & SSL (DNS-01 Challenges). Routes subdomains like <code>gitea.*</code>.</p>
+                <p><strong>Traefik v3:</strong> Reverse Proxy & SSL (DNS-01 Challenges). Routes subdomains for all core and user-deployed services.</p>
             </article>
             <article class="card">
                 <h4>🔐 Identity</h4>
@@ -68,10 +68,10 @@
         <p>Consumer-facing services isolated from the core infrastructure.</p>
         <div class="layer-box">
             <ul>
-                <li><strong>Service Discovery:</strong> <em>Homepage</em> dashboard provides a unified portal.</li>
-                <li><strong>Learning Hub:</strong> A dedicated Kanban board (FastAPI + SQLite) for tracking courses and milestones.</li>
-                <li><strong>SSO Integration:</strong> Critical apps (Gitea, Dozzle, Learning) utilize Authelia Forward Auth.</li>
-                <li><strong>Isolation:</strong> Services have no direct host access and communicate over internal networks.</li>
+                <li><strong>Service Discovery:</strong> <em>Homepage</em> dashboard serves as a unified entry portal.</li>
+                <li><strong>SSO Protection:</strong> Critical administration pages and external services utilize Authelia Forward Auth.</li>
+                <li><strong>Decoupled Lifecycles:</strong> User applications run in separate containers outside this repository, keeping the core system clean and stable.</li>
+                <li><strong>Isolation:</strong> Services have no direct host access and communicate strictly over dynamic internal networks.</li>
             </ul>
         </div>
     </section>

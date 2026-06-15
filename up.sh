@@ -5,45 +5,43 @@ docker network inspect proxy-net >/dev/null 2>&1 || docker network create proxy-
 docker network inspect socket-net >/dev/null 2>&1 || docker network create socket-net
 
 # SSL Permissions (Moved to infra/core)
-sudo mkdir -p infra/core/letsencrypt
-sudo touch infra/core/letsencrypt/acme.json
-sudo chmod 600 infra/core/letsencrypt/acme.json
-sudo chown root:root infra/core/letsencrypt/acme.json
+if [ ! -f infra/core/letsencrypt/acme.json ]; then
+    echo "Initializing letsencrypt/acme.json..."
+    sudo mkdir -p infra/core/letsencrypt
+    sudo touch infra/core/letsencrypt/acme.json
+    sudo chmod 600 infra/core/letsencrypt/acme.json
+    sudo chown root:root infra/core/letsencrypt/acme.json
+fi
 
 # --- 2. HELPER FUNCTIONS ---
 start_stack() {
     local stack_path=$1
+    shift
+    local env_flags=()
+    for env_file in "$@"; do
+        if [ -f "$env_file" ]; then
+            env_flags+=("--env-file" "$env_file")
+        fi
+    done
     if [ -f "$stack_path/docker-compose.yml" ]; then
         echo "Starting stack: $stack_path..."
-        docker compose -f "$stack_path/docker-compose.yml" up -d
+        docker compose -f "$stack_path/docker-compose.yml" "${env_flags[@]}" up -d
     else
         echo "Warning: No docker-compose.yml found in $stack_path"
     fi
 }
 
-# --- 3. INFRASTRUCTURE LAYER (Control Plane) ---
-echo "=== Deploying Infrastructure Layer ==="
-start_stack "infra/core"
-start_stack "infra/authelia"
+# --- 3. DEPLOY CONTROL PLANE & PORTAL ---
+echo "=== Deploying Control Plane ==="
+start_stack "infra/core" "infra/core/.env"
+start_stack "infra/authelia" "infra/core/.env" "infra/authelia/.env"
 start_stack "infra/portainer"
 start_stack "infra/watchtower"
 start_stack "infra/diun"
 start_stack "infra/dozzle"
-echo "Infrastructure is ready."
-echo ""
 
-# --- 4. APPLICATION LAYER (Data Plane) ---
-if [[ "$1" == "--infra-only" ]]; then
-    echo "Skipping Application Layer as requested."
-else
-    echo "=== Deploying Application Layer ==="
-    # Dynamically start all apps in the apps/ directory
-    for app_dir in apps/*/; do
-        start_stack "${app_dir%/}"
-    done
-    echo "Applications are ready."
-fi
+echo "=== Deploying Homepage Portal ==="
+start_stack "homepage" "infra/core/.env"
 
 echo ""
 echo "Hardened Private Cloud Deployment Complete."
-echo "Usage: ./up.sh [--infra-only]"

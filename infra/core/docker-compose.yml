@@ -54,8 +54,8 @@ services:
       - "--entrypoints.websecure.address=:443"
       # Global TLS defaults for websecure
       - "--entrypoints.websecure.http.tls.certResolver=myresolver"
-      - "--entrypoints.websecure.http.tls.domains[0].main=arch-services.mywire.org"
-      - "--entrypoints.websecure.http.tls.domains[0].sans=*.arch-services.mywire.org"
+      - "--entrypoints.websecure.http.tls.domains[0].main=${DOMAIN}"
+      - "--entrypoints.websecure.http.tls.domains[0].sans=*.${DOMAIN}"
       # SSL Setup
       - "--certificatesresolvers.myresolver.acme.dnschallenge=true"
       - "--certificatesresolvers.myresolver.acme.dnschallenge.provider=dynu"
@@ -74,19 +74,19 @@ services:
       - "traefik.http.middlewares.https-redirect.redirectscheme.permanent=true"
 
       # Middleware: Authelia Guard
-      - "traefik.http.middlewares.authelia-auth.forwardauth.address=http://authelia:9091/api/verify?rd=https://auth.arch-services.mywire.org/"
+      - "traefik.http.middlewares.authelia-auth.forwardauth.address=http://authelia:9091/api/verify?rd=https://auth.${DOMAIN}/"
       - "traefik.http.middlewares.authelia-auth.forwardauth.trustForwardHeader=true"
       - "traefik.http.middlewares.authelia-auth.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email"
 
       # Dashboard - Public (HTTPS)
-      - "traefik.http.routers.traefik-dash.rule=Host(`traefik.arch-services.mywire.org`)"
+      - "traefik.http.routers.traefik-dash.rule=Host(`traefik.${DOMAIN}`)"
       - "traefik.http.routers.traefik-dash.entrypoints=websecure"
       - "traefik.http.routers.traefik-dash.tls=true"
       - "traefik.http.routers.traefik-dash.service=api@internal"
       - "traefik.http.routers.traefik-dash.middlewares=authelia-auth@docker"
       
       # Dashboard - Public (Redirect)
-      - "traefik.http.routers.traefik-dash-red.rule=Host(`traefik.arch-services.mywire.org`)"
+      - "traefik.http.routers.traefik-dash-red.rule=Host(`traefik.${DOMAIN}`)"
       - "traefik.http.routers.traefik-dash-red.entrypoints=web"
       - "traefik.http.routers.traefik-dash-red.middlewares=https-redirect@docker"
 

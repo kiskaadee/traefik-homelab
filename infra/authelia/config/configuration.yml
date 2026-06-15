@@ -14,9 +14,9 @@ authentication_backend:
 access_control:
   default_policy: deny
   rules:
-    - domain: "auth.arch-services.mywire.org"
+    - domain: "auth.{{ env \"DOMAIN\" }}"
       policy: bypass
-    - domain: "*.arch-services.mywire.org"
+    - domain: "*.{{ env \"DOMAIN\" }}"
       policy: one_factor
 
 session:
@@ -26,8 +26,8 @@ session:
   inactivity: 300
   remember_me: 1M
   cookies:
-    - domain: arch-services.mywire.org
-      authelia_url: https://auth.arch-services.mywire.org
+    - domain: "{{ env \"DOMAIN\" }}"
+      authelia_url: "https://auth.{{ env \"DOMAIN\" }}"
 
 identity_validation:
   reset_password:

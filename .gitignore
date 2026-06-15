@@ -1,41 +1,27 @@
 # Environments & Secrets
 .env
 .env.*
-**/letsencrypt/acme.json
+**/.env
 **/config/*.env
 **/config/users.yml
-**/.env
 
-# Authelia Data
-**/authelia/config/db.sqlite3
-**/authelia/config/emails.txt
-
-# Application Data (Persistent Volumes)
-**/data/
-**/ollama_data/
-**/portainer_data/
-
-# Infrastructure Data
-infra/diun/data/
-infra/authelia/config/db.sqlite3
-
-# Certificates
+# SSL / ACME Certificates & Keys
+**/letsencrypt/acme.json
 **/*.key
 **/*.crt
 **/*.pem
 
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-.venv/
-venv/
+# Authelia Databases & Mail Logs
+infra/authelia/config/db.sqlite3
+infra/authelia/config/emails.txt
 
-# OS Metadata
+# Infrastructure Persistent Volumes & Logs
+**/portainer_data/
+infra/diun/data/
+homepage/config/logs/
+
+# OS & Editor Metadata
 .DS_Store
 Thumbs.db
-apps/homepage/config/logs/
-
-apps/learning/learning.db
-apps/jellyfin/cache
-apps/jellyfin/config
+.vscode/
+.idea/

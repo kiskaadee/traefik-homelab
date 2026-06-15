@@ -11,7 +11,7 @@
 <main>
     <header>
         <h1>🖱️ Usability & Operational Notes</h1>
-        <p>A guide for interacting with the Hardened Hub once deployed.</p>
+        <p>A guide for interacting with the Hardened Hub and exposing external services.</p>
     </header>
 
     <nav>
@@ -20,19 +20,18 @@
             <li><a href="#auth">Authentication</a></li>
             <li><a href="#nav">Navigation</a></li>
             <li><a href="#mgmt">Management</a></li>
-            <li><a href="#add">Adding Apps</a></li>
-            <li><a href="#ollama">Ollama API</a></li>
+            <li><a href="#add">Exposing New Services</a></li>
         </ul>
     </nav>
 
     <section id="auth">
         <h2>🔑 Authentication (SSO)</h2>
-        <p>Most services are protected by <strong>Authelia</strong>.</p>
+        <p>Critical core services and protected user applications are shielded by <strong>Authelia</strong>.</p>
         <ol>
-            <li>Access a protected service (e.g., <code>gitea.*</code>).</li>
-            <li>You will be redirected to the Auth Portal (<code>auth.*</code>).</li>
+            <li>Access a protected URL (e.g., <code>https://portainer.arch-services.mywire.org</code>).</li>
+            <li>You will be redirected to the Auth Portal (<code>https://auth.arch-services.mywire.org</code>).</li>
             <li>Log in with your credentials.</li>
-            <li>Once authenticated, you have global access to all SSO-enabled services.</li>
+            <li>Once authenticated, you obtain global session access to all SSO-protected services.</li>
         </ol>
     </section>
 
@@ -45,47 +44,114 @@
         </ul>
         <div class="layer-box">
             <h4>Local Access (Fast Lane)</h4>
-            <p>To avoid traversing the public internet when you are on the same network as the server, we use a <strong>Public Domain + Local IP</strong> strategy (see <a href="adr-001-remove-localhost-routers.md">ADR 001</a>).</p>
-            <p>Add the following to your machine's <code>/etc/hosts</code> file:</p>
-            <pre><code>127.0.0.1  traefik.arch-services.mywire.org auth.arch-services.mywire.org jellyfin.arch-services.mywire.org gitea.arch-services.mywire.org excalidraw.arch-services.mywire.org homepage.arch-services.mywire.org mermaid.arch-services.mywire.org ollama.arch-services.mywire.org learning.arch-services.mywire.org logs.arch-services.mywire.org portainer.arch-services.mywire.org arch-services.mywire.org</code></pre>
-            <p><em>Note: This ensures valid SSL and working SSO cookies for local sessions.</em></p>
+            <p>To bypass traversing the public internet when you are on the same local network as the server, we use a **Public Domain + Local IP** mapping strategy (see <a href="adr-001-remove-localhost-routers.md">ADR 001</a>).</p>
+            <p>Add the following mapping to your client machine's <code>/etc/hosts</code> file (using your server's local IP, e.g., <code>192.168.1.100</code> or <code>127.0.0.1</code> if testing locally):</p>
+            <pre><code>127.0.0.1  arch-services.mywire.org traefik.arch-services.mywire.org auth.arch-services.mywire.org logs.arch-services.mywire.org portainer.arch-services.mywire.org [your-app-subdomain].arch-services.mywire.org</code></pre>
+            <p><em>Note: This guarantees valid SSL handshakes and working SSO cookies for local LAN sessions.</em></p>
         </div>
     </section>
 
-
     <section id="mgmt">
-        <h2>🛠️ Service Management</h2>
-        <h3>Deployment Scripts</h3>
-        <pre><code># Start everything
+        <h2>🛠️ Core Infrastructure Management</h2>
+        <p>Deploy the control plane stacks and homepage directly using the host scripts:</p>
+        <pre><code># Start the Control Plane + Homepage Portal
 ./up.sh
 
-# Start ONLY the Control Plane
-./up.sh --infra-only
-
-# Stop all services
+# Stop all Core services
 ./down.sh</code></pre>
     </section>
 
     <section id="add">
-        <h2>➕ Adding a New Application</h2>
-        <ol>
-            <li>Create <code>apps/your-app/docker-compose.yml</code>.</li>
-            <li>Connect to <code>proxy-net</code>.</li>
-            <li>Add Traefik labels for routing and Authelia protection.</li>
-            <li>Update <code>apps/homepage/config/services.yaml</code>.</li>
-        </ol>
-    </section>
+        <h2>➕ Exposing a New Service (Decoupled Model)</h2>
+        <p>User applications are fully decoupled from the core repository and managed in their own directories (e.g., <code>/home/kiskaadee/deployments/my-app</code>). We use Traefik labels to expose them under the <code>*.arch-services.mywire.org</code> wildcard domain.</p>
+        
+        <p>Depending on your security and access needs, you can configure your stack for one of two scenarios:</p>
 
-    <section id="ollama">
-        <h2>🤖 Ollama API & Automation</h2>
-        <p>Uses a hybrid security model for browser and CLI access.</p>
-        <div class="layer-box">
-            <h4>API Key / Trusted Payload</h4>
-            <p><strong>Header:</strong> <code>X-Ollama-Key: sk-ollama-hardened-hub-2026</code></p>
-            <pre><code>curl https://ollama.arch-services.mywire.org/api/generate \
-  -H "X-Ollama-Key: sk-ollama-hardened-hub-2026" \
-  -d '{"model": "llama3", "prompt": "hi"}'</code></pre>
+        <div class="grid">
+            <article class="card">
+                <h4>🔓 Scenario A: Public / Direct Access</h4>
+                <p>Use this for applications that have their own built-in authentication (e.g., Jellyfin, Gitea) or public-facing projects (e.g., public web demos, portfolios).</p>
+            </article>
+            <article class="card">
+                <h4>🔒 Scenario B: SSO-Protected</h4>
+                <p>Use this for administrative tools, private databases, or custom internal apps that do not have native authentication and need to be secured behind Authelia.</p>
+            </article>
         </div>
+
+        <br>
+
+        <h3>Scenario A: Public / Direct Access (Bypassing Authelia)</h3>
+        <p>This configuration exposes your service directly to the internet. Authelia is bypassed, allowing anyone (or the app's own login manager) to handle access.</p>
+        
+        <pre><code class="language-yaml">services:
+  my-public-app:
+    image: my-app-image:latest
+    container_name: my-public-app
+    networks:
+      - proxy-net
+    labels:
+      - "traefik.enable=true"
+      
+      # 1. Main HTTPS Route Rule
+      - "traefik.http.routers.public-app.rule=Host(`demo.arch-services.mywire.org`)"
+      - "traefik.http.routers.public-app.entrypoints=websecure"
+      - "traefik.http.routers.public-app.tls=true"
+      - "traefik.http.routers.public-app.service=public-app-svc"
+
+      # 2. HTTP to HTTPS Redirection Route
+      - "traefik.http.routers.public-app-red.rule=Host(`demo.arch-services.mywire.org`)"
+      - "traefik.http.routers.public-app-red.entrypoints=web"
+      - "traefik.http.routers.public-app-red.middlewares=https-redirect@docker"
+
+      # 3. Port Mapping (Target port inside the container)
+      - "traefik.http.services.public-app-svc.loadbalancer.server.port=8080"
+
+networks:
+  proxy-net:
+    external: true</code></pre>
+
+        <h3>Scenario B: SSO-Protected (Secured by Authelia)</h3>
+        <p>This configuration intercepts all incoming requests and redirects unauthenticated users to the Authelia portal first. Once logged in, users are returned to the service.</p>
+        
+        <pre><code class="language-yaml">services:
+  my-secure-app:
+    image: my-app-image:latest
+    container_name: my-secure-app
+    networks:
+      - proxy-net
+    labels:
+      - "traefik.enable=true"
+      
+      # 1. Main HTTPS Route Rule
+      - "traefik.http.routers.secure-app.rule=Host(`admin.arch-services.mywire.org`)"
+      - "traefik.http.routers.secure-app.entrypoints=websecure"
+      - "traefik.http.routers.secure-app.tls=true"
+      - "traefik.http.routers.secure-app.service=secure-app-svc"
+
+      # 2. SSO Authentication Middleware (Crucial Line)
+      - "traefik.http.routers.secure-app.middlewares=authelia-auth@docker"
+
+      # 3. HTTP to HTTPS Redirection Route
+      - "traefik.http.routers.secure-app-red.rule=Host(`admin.arch-services.mywire.org`)"
+      - "traefik.http.routers.secure-app-red.entrypoints=web"
+      - "traefik.http.routers.secure-app-red.middlewares=https-redirect@docker"
+
+      # 4. Port Mapping (Target port inside the container)
+      - "traefik.http.services.secure-app-svc.loadbalancer.server.port=3000"
+
+networks:
+  proxy-net:
+    external: true</code></pre>
+
+        <h3>3. Register in Homepage Dashboard</h3>
+        <p>To list your new service on the central dashboard, update <code>homepage/config/services.yaml</code> inside the core repository:</p>
+        <pre><code class="language-yaml">- User Applications:
+    - My Application:
+        icon: custom-app-icon
+        href: https://my-app.arch-services.mywire.org
+        description: Custom exposed app description
+        server: my-docker
+        container: my-app # Must match container_name exactly</code></pre>
     </section>
 
     <footer>

@@ -5,17 +5,19 @@ services:
     restart: always
     volumes:
       - ./config:/config
+    environment:
+      - DOMAIN=${DOMAIN}
     networks:
       - proxy-net
     labels:
       - "traefik.enable=true"
       # Public (HTTPS)
-      - "traefik.http.routers.authelia.rule=Host(`auth.arch-services.mywire.org`)"
+      - "traefik.http.routers.authelia.rule=Host(`auth.${DOMAIN}`)"
       - "traefik.http.routers.authelia.entrypoints=websecure"
       - "traefik.http.routers.authelia.tls=true"
 
       # Public (Redirect)
-      - "traefik.http.routers.authelia-red.rule=Host(`auth.arch-services.mywire.org`)"
+      - "traefik.http.routers.authelia-red.rule=Host(`auth.${DOMAIN}`)"
       - "traefik.http.routers.authelia-red.entrypoints=web"
       - "traefik.http.routers.authelia-red.middlewares=https-redirect@docker"
 
