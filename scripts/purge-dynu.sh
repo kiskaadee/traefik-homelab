@@ -2,7 +2,7 @@
 
 # Path to your configuration
 # Changed to project relative path
-ENV_FILE="infra/core/.env"
+ENV_FILE="${ENV_FILE:-.env}"
 
 # 1. Load Environment Variables
 if [ -f "$ENV_FILE" ]; then
@@ -44,6 +44,6 @@ fi
 
 # 4. Restart Traefik to trigger new challenge
 echo "Restarting Traefik..."
-cd infra/core/ && docker compose restart traefik
+docker compose restart traefik
 
 echo "Process complete. Monitor logs with: docker logs traefik 2>&1 | grep -iE 'acme|dynu'"

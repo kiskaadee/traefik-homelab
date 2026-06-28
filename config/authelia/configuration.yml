@@ -14,29 +14,29 @@ authentication_backend:
 access_control:
   default_policy: deny
   rules:
-    - domain: "auth.{{ env \"DOMAIN\" }}"
+    - domain: 'auth.{{ env "DOMAIN" }}'
       policy: bypass
-    - domain: "*.{{ env \"DOMAIN\" }}"
+    - domain: '*.{{ env "DOMAIN" }}'
       policy: one_factor
 
 session:
   name: authelia_session
-  secret: "{{ env \"AUTHELIA_SESSION_SECRET\" }}"
+  secret: '{{ env "AUTHELIA_SESSION_SECRET" }}'
   expiration: 3600
   inactivity: 300
   remember_me: 1M
   cookies:
-    - domain: "{{ env \"DOMAIN\" }}"
-      authelia_url: "https://auth.{{ env \"DOMAIN\" }}"
+    - domain: '{{ env "DOMAIN" }}'
+      authelia_url: 'https://auth.{{ env "DOMAIN" }}'
 
 identity_validation:
   reset_password:
-    jwt_secret: "{{ env \"AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET\" }}"
+    jwt_secret: '{{ env "AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET" }}'
 
 storage:
   local:
     path: /config/db.sqlite3
-  encryption_key: "{{ env \"AUTHELIA_STORAGE_ENCRYPTION_KEY\" }}"
+  encryption_key: '{{ env "AUTHELIA_STORAGE_ENCRYPTION_KEY" }}'
 
 notifier:
   filesystem:

@@ -1,28 +1,27 @@
 # Environments & Secrets
 .env
 .env.*
-**/.env
-**/config/*.env
-**/config/users.yml
+secrets.txt
+backup.zip
 
 # SSL / ACME Certificates & Keys
-**/letsencrypt/acme.json
+config/letsencrypt/acme.json
 **/*.key
 **/*.crt
 **/*.pem
 
 # Authelia Databases & Mail Logs
-infra/authelia/config/db.sqlite3
-infra/authelia/config/emails.txt
+config/authelia/db.sqlite3
+config/authelia/emails.txt
 
-# Infrastructure Persistent Volumes & Logs
-**/portainer_data/
-infra/diun/data/
-homepage/config/logs/
+# Diun Databases
+config/diun/diun.db
+
+# Homepage Logs
+config/homepage/logs/
 
 # OS & Editor Metadata
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
-backup.zip
