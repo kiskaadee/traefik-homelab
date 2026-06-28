@@ -226,12 +226,9 @@ services:
 
 networks:
   proxy-net:
-    name: proxy-net
-    driver: bridge
+    external: true
   socket-net:
-    name: socket-net
-    driver: bridge
-    internal: true
+    external: true
 
 volumes:
   portainer_data:
