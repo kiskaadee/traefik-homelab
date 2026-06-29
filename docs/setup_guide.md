@@ -37,7 +37,7 @@ Secrets are managed declaratively using **`sops-nix`** (Mozilla SOPS + age keys)
 
 ## 🔑 Adding/Editing Secrets
 
-To add or modify credentials (e.g. changing your Dynu API key or regenerating Authelia secrets):
+To add or modify credentials (e.g. changing your Dynu API key or updating Authelia users):
 
 1. Navigate to your system configuration repository:
    ```bash
@@ -54,7 +54,12 @@ To add or modify credentials (e.g. changing your Dynu API key or regenerating Au
    authelia_session_secret: "secure_64_character_hex_string"
    authelia_storage_encryption_key: "secure_64_character_hex_string"
    authelia_identity_validation_reset_password_jwt_secret: "secure_64_character_hex_string"
+   
+   # Hashed password for the default admin user
+   authelia_user_kiskaadee_password_hash: "$argon2id$v=19$m=65536..."
    ```
+   *To generate an Argon2 password hash securely, run:*
+   `docker run --rm -it authelia/authelia:latest authelia crypto hash generate argon2`
 4. Save and close the editor. SOPS will automatically encrypt the file and write it back to disk.
 
 ---
@@ -78,9 +83,26 @@ sops.templates."homeserver.env" = {
     AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET = config.sops.placeholder.authelia_identity_validation_reset_password_jwt_secret;
   };
 };
+
+# 2. Declarative User Database Template
+We also generate Authelia's `users.yml` file from the decrypted Argon2 hash:
+```nix
+sops.templates."users.yml" = {
+  owner = "kiskaadee";
+  content = ''
+    users:
+      kiskaadee:
+        displayname: "Kiskaadee"
+        password: "${config.sops.placeholder.authelia_user_kiskaadee_password_hash}"
+        email: "fcortesbio@gmail.com"
+        groups:
+          - admins
+          - dev
+  '';
+};
 ```
 
-### 2. systemd Lifecycle Daemon
+### 3. systemd Lifecycle Daemon
 The service starts and stops the compose stack automatically:
 ```nix
 systemd.services.homeserver-core = {
